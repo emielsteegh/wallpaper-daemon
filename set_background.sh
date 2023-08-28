@@ -22,7 +22,7 @@ author=$(xattr -p com.author "$WALLPAPER_PATH" 2>/dev/null || echo "NA")
 # if I am not the author of the current wallpaper, set a new one
 if [ $FORCE = true ] || [ $author != "wallpaper_daemon" ]; then
     shopt -s nullglob
-    files=($WALLPAPER_STORE/*.{jpg,jpeg,png})
+    files=($WALLPAPER_STORE/*.{jpg,jpeg})
     shopt -u nullglob
 
     if [ ${#files[@]} -eq 0 ]; then
