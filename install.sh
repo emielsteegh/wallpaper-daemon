@@ -1,14 +1,27 @@
 #!/bin/bash
 
-BASE_DIR=$(dirname "$0")
+BASE_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 WALLPAPER_PATH="/Library/Desktop/Wallpaper.jpg"
 SCRIPT_PATH="$BASE_DIR/set_background.sh"
 UNINST_PATH="$BASE_DIR/uninstall.sh"
 
-
 PLIST_PATH="$HOME/Library/LaunchAgents/"
 PLIST_NAME_LOGIN="com.wallpaperdaemon.login"
 PLIST_NAME_WATCH="com.wallpaperdaemon.watch"
+
+VERBOSE=""
+while getopts v opt; do
+    case $opt in
+        v) 
+            VERBOSE="v" 
+            echo "Installed in debug mode"
+            ;;
+        \?)
+            echo "Invalid option:    -$OPTARG" >&2
+            exit 1
+            ;;
+    esac
+done
 
 # make set_background.sh and uninstall.sh executable
 chmod a+x $SCRIPT_PATH
@@ -26,7 +39,7 @@ cat > $PLIST_PATH/$PLIST_NAME_LOGIN.plist << EOF
         <key>ProgramArguments</key>
         <array>
                 <string>${SCRIPT_PATH}</string>
-                <string>-f</string>
+                <string>-f${VERBOSE}</string>
         </array>
         <key>RunAtLoad</key>
         <true/>
@@ -49,13 +62,12 @@ cat > $PLIST_PATH/$PLIST_NAME_WATCH.plist << EOF
 <plist version="1.0">
 <!--Changes wallpaper on when the file is manually changed-->
 <dict>
-        <key>KeepAlive</key>
-        <true/>
         <key>Label</key>
         <string>${PLIST_NAME_WATCH}</string>
         <key>ProgramArguments</key>
         <array>
                 <string>${SCRIPT_PATH}</string>
+                <string>-${VERBOSE}</string>
         </array>
         <key>WatchPaths</key>
         <array>
