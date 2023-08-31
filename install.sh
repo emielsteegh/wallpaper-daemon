@@ -30,6 +30,14 @@ cat > $PLIST_PATH/$PLIST_NAME_LOGIN.plist << EOF
         </array>
         <key>RunAtLoad</key>
         <true/>
+        <key>StandardErrorPath</key>
+        <string>${BASE_DIR}/logs/login.stderr</string>
+        <key>StandardOutPath</key>
+        <string>${BASE_DIR}/logs/login.stdout</string>
+        <key>TimeOut</key>
+        <integer>60</integer>
+        <key>Nice</key>
+        <integer>20</integer>
 </dict>
 </plist>
 EOF
@@ -41,6 +49,8 @@ cat > $PLIST_PATH/$PLIST_NAME_WATCH.plist << EOF
 <plist version="1.0">
 <!--Changes wallpaper on when the file is manually changed-->
 <dict>
+        <key>KeepAlive</key>
+        <true/>
         <key>Label</key>
         <string>${PLIST_NAME_WATCH}</string>
         <key>ProgramArguments</key>
@@ -51,6 +61,10 @@ cat > $PLIST_PATH/$PLIST_NAME_WATCH.plist << EOF
         <array>
                 <string>${WALLPAPER_PATH}</string>
         </array>
+        <key>StandardErrorPath</key>
+        <string>${BASE_DIR}/logs/watch.stderr</string>
+        <key>StandardOutPath</key>
+        <string>${BASE_DIR}/logs/watch.stdout</string>
 </dict>
 </plist>
 EOF
