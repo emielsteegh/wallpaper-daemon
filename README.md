@@ -8,7 +8,7 @@ Little tool to get around the imposed (and mildly bleak) wallpaper on your manag
 Clone this repo wherever you would like, and keep it there. 
 
 **2. Install/Unisntall**<br>
-Run `./install.sh` to install the daemon, and `./uninstall.sh` to uninstall it. Uninstalling does not revert the wallpaper, but the management profile will kick it back in a day <sup>[citation needed]</sup>.
+Run `./install.sh` to install the daemon, and `./uninstall.sh` to uninstall it. Uninstalling does not revert the wallpaper, but the management profile will kick it back in a day <sup>[citation needed]</sup>. Installing with `-v` will enable verbose logging.
 
 **3. ???**<br>
 After installation a random wallpaper will be selected from the `wallpaper-storage` folder on every login, and when anything other than this tool changes the wallpaper (like the management profile).

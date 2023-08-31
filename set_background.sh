@@ -1,20 +1,30 @@
 #!/bin/bash
 FORCE=false
-while getopts ":fv:" opt; do
+VERBOSE=false
+WALLPAPER_PATH="/Library/Desktop/Wallpaper.jpg"
+BASE_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+WALLPAPER_STORE="$BASE_DIR/wallpaper-storage"
+
+while getopts fv opt; do
     case $opt in
-        f)
-            FORCE=true
-            ;;
+        f) FORCE=true   ;;
+        v) VERBOSE=true ;;
         \?)
-            echo "Invalid option: -$OPTARG" >&2
+            echo "Invalid option:    -$OPTARG" >&2
             exit 1
             ;;
     esac
 done
 
-WALLPAPER_PATH="/Library/Desktop/Wallpaper.jpg"
-BASE_DIR=$(dirname "$0")
-WALLPAPER_STORE="$BASE_DIR/wallpaper-storage"
+if [ $VERBOSE = true ]; then
+    echo "Job started at:       $(date)"
+    echo "Force:                $FORCE"
+fi
+
+# if wallpaper path does not exist, touch
+if [ ! -f $WALLPAPER_PATH ]; then
+    touch $WALLPAPER_PATH
+fi
 
 # give write permissions to wallpaper path
 chmod a+w $WALLPAPER_PATH
@@ -26,7 +36,8 @@ shopt -u nullglob
 
 # error if no wallpapers are found
 if [ ${#files[@]} -eq 0 ]; then
-    echo "No wallpapers found in $WALLPAPER_STORE"
+    # throw error
+    echo " ! No wallpapers found in $WALLPAPER_STORE"
     exit 1
 fi
 
@@ -36,19 +47,39 @@ for i in "${!files[@]}"; do
 done
 
 current_md5=$(md5 -q "$WALLPAPER_PATH")
+bad_wallpaper=false
+if ! [[ ${md5s[@]} =~ ${current_md5} ]]; then
+    bad_wallpaper=true
+fi
+
+if [ $VERBOSE = true ]; then
+    echo "Bad wallpaper:        $bad_wallpaper"
+fi
+
 
 # if force or current md5 not in md5s
-if [ $FORCE = true ] || ! [[ ${md5s[@]} =~ ${current_md5} ]]; then
+if [ $FORCE = true ] || [ $bad_wallpaper = true ]; then
 
     # choose a random wallpaper
     file=${files[$((RANDOM % ${#files[@]}))]}
+    if [ $VERBOSE = true ]; then
+        echo "Updating wallpaper:   yes"
+        echo "Chosen wallpaper:     $(basename $file)"
+    fi
 
     # copy wallpaper to destination
     cp "$file" "$WALLPAPER_PATH"
 
-    # mark the daemon as author
-    xattr -w com.author "wallpaper_daemon" "$WALLPAPER_PATH"
-
     # refresh background
     killall Dock 
+else
+    if [ $VERBOSE = true ]; then
+        echo "Updating wallpaper:   no"
+    fi
+fi
+
+if [ $VERBOSE = true ]; then
+    echo "Job finished:         $(date)"
+    echo ""
+    echo ""
 fi
